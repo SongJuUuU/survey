@@ -3,8 +3,8 @@ import './App.css';
 
 function App() {
   const programs = [
-    "멘토링 프로그램", "재학생 취업 현황 조사", "취업 설명회 및 공고 게시", "RC 101 - 재학생 및 졸업생 간담회",
-    "연세 의·치·간 Bio & Medical Idea Fair", "국제 교류 프로그램 대학 및 간호대학 동아리 활동", "간호대학 동아리 활동", "졸업생 홈커밍 데이 및 취업 현황 조사",
+    "멘토링 프로그램", "재학생 취업 현황 조사", "취업 설명회 및 공고", "RC 101",
+    "연세 의·치·간 Idea Fair", "국제 교류 프로그램", "간호대학 동아리 활동", "졸업생 홈커밍 데이 및 취업 현황 조사",
     "복수전공, 연계전공, 부전공 설명회", "진로관련 소규모 세미나"
   ];
 
@@ -44,7 +44,7 @@ function App() {
   const [wantInterview, setWantInterview] = useState(null);
   const [interviewEmail, setInterviewEmail] = useState('');
 
-  const [currentPage, setCurrentPage] = useState('explanation');
+  const [currentPage, setCurrentPage] = useState('welcome');
 
   const [consents, setConsents] = useState({
     consent1: null,
@@ -74,6 +74,7 @@ function App() {
   // 새로운 상태 추가
   const [alternativeDate, setAlternativeDate] = useState('');
   const [contactEmail, setContactEmail] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
 
   const questions = {
     q1: [
@@ -407,6 +408,53 @@ function App() {
 
   const renderPage = () => {
     switch(currentPage) {
+      case 'welcome':
+        return (
+          <div className="App">
+            <div className="survey-container">
+              <div className="welcome-message">
+                <div className="greeting">안녕하십니까?</div>
+                
+                <div className="intro-text">
+                  <p>먼저, 바쁘신 와중에 소중한 시간을 할애해 주셔서 감사합니다.</p>
+                  
+                  <p>본 설문은 연세대학교 간호대학의 진로지도 프로그램에 대한 참여 경험 및 요구도를 탐색하여 
+                효과적인 진로지도 개선 방안을 마련하고자 실시됩니다.</p>
+                  
+                  <p>귀하께서 응답하신 내용에 대해서는 모두 비밀이 보장될 것이며, 무기명 통계 자료로 학술연구 
+                목적으로만 사용할 것입니다.</p>
+                  
+                  <p>귀하께서 본 연구에 참여를 원하지 않을 경우에는 언제라도 참여를 중단하실 수 있으며, 그로인한 
+                어떠한 불이익도 없음을 알려드립니다.</p>
+                  
+                  <p>귀하께서 응답하신 내용은 본 연구의 소중한 자료가 될 것이므로 성실한 답변을 부탁드리며, 연구에 
+                관하여 궁금하신 사항이 있으시면 연구자에게 연락 주시기 바랍니다.</p>
+                  
+                  <p>귀한 시간 내어 본 연구에 참여해 주셔서 다시 한 번 진심으로 감사드립니다.</p>
+                </div>
+
+                <div className="researcher-info">
+                  <div className="researcher-section">
+                    <h3>연구담당자</h3>
+                    <p>신유미 (YUSHIN23@yuhs.ac, 02-2228-3358)</p>
+                  </div>
+                  
+                  <div className="researcher-section">
+                    <h3>연구 책임자</h3>
+                    <p>김희정 (HKIM80@yuhs.ac, 02-2228-3273)</p>
+                  </div>
+                </div>
+
+                <button 
+                  className="start-survey-button"
+                  onClick={() => setCurrentPage('explanation')}
+                >
+                  시작하기
+                </button>
+              </div>
+            </div>
+          </div>
+        );
       case 'explanation':
         return (
           <div className="App">
@@ -837,7 +885,7 @@ function App() {
                 </div>
 
                 <div className="question">
-                  <h3>3. 학년</h3>
+                  <h3>3. 학년(2024-2학기 기준)</h3>
                   {['1학년', '2학년', '3학년', '4학년'].map(grade => (
                     <button
                       key={grade}
@@ -849,7 +897,7 @@ function App() {
 
                 <div className="question">
                   <h3>4. 입학 과정</h3>
-                  {['정시 입학', '수시 입학', '학사/일반 편입'].map(type => (
+                  {['정시 입학', '수시 입학', '학사 편입', '일반 편입'].map(type => (
                     <button
                       key={type}
                       className={`demo-button ${personalInfo.admissionType === type ? 'selected' : ''}`}
@@ -1034,16 +1082,16 @@ function App() {
               </div>
 
               <div className="program-questions">
-                <div className="program-intro">
-                  <p>
+              <div className="program-intro">
+                <p>
                     이제부터는 연세대학교 간호대학에서 실시하는 '커리어 연세 간호'와 관련한 [진로지도 프로그램]에 대한 질문들입니다. 
                     각 프로그램에 대하여, 인지 여부, 참여 여부, 만족도 그리고 불참 이유에 대한 질문을 드릴 예정입니다. 
                     각 프로그램에 대한 질문에 성실히 응답해주시길 바랍니다.
-                  </p>
-                </div>
+                </p>
+              </div>
 
-                <div className="current-program">
-                  <h3>{programs[currentProgram]}</h3>
+              <div className="current-program">
+                <h3>{programs[currentProgram]}</h3>
                   <div className="question" style={{ textAlign: 'center' }}>
                     <h3 style={{ textAlign: 'center' }}>{programs[currentProgram]}에 대해서 <br /> 알고계십니까?</h3>
                     <button 
@@ -1381,77 +1429,77 @@ function App() {
                 <h2>추가 프로그램</h2>
               </div>
 
-              <div className="additional-program-section">
+                  <div className="additional-program-section">
                 <div className="question">
                   <h3>앞서 언급된 프로그램 외에 알고 있는 진로지도 프로그램이 있으십니까?</h3>
-                  <div className="program-buttons">
-                    <button 
-                      className={`demo-button ${additionalProgram.exists === true ? 'selected' : ''}`}
+                    <div className="program-buttons">
+                      <button
+                        className={`demo-button ${additionalProgram.exists === true ? 'selected' : ''}`}
                       onClick={() => setAdditionalProgram(prev => ({...prev, exists: true}))}
                     >
                       예
                     </button>
-                    <button 
-                      className={`demo-button ${additionalProgram.exists === false ? 'selected' : ''}`}
+                      <button
+                        className={`demo-button ${additionalProgram.exists === false ? 'selected' : ''}`}
                       onClick={() => setAdditionalProgram(prev => ({...prev, exists: false}))}
                     >
                       아니오
                     </button>
                   </div>
-                </div>
+                    </div>
 
                 {additionalProgram.exists === true && (
-                  <>
+                      <>
                     <div className="question">
                       <h3>프로그램의 이름을 적어주세요:</h3>
-                      <input
-                        type="text"
-                        className="program-name-input"
-                        value={additionalProgram.name}
+                          <input
+                            type="text"
+                            className="program-name-input"
+                            value={additionalProgram.name}
                         onChange={(e) => setAdditionalProgram(prev => ({...prev, name: e.target.value}))}
-                        placeholder="프로그램 이름을 입력해주세요"
-                      />
-                    </div>
+                            placeholder="프로그램 이름을 입력해주세요"
+                          />
+                        </div>
 
                     <div className="question">
                       <h3>해당 프로그램에 참여해보신적이 있으십니까?</h3>
-                      <button 
+                            <button
                         onClick={() => setAdditionalProgram(prev => ({...prev, participated: true}))}
                         className={additionalProgram.participated === true ? 'selected' : ''}
                       >
                         네
                       </button>
-                      <button 
+                            <button
                         onClick={() => setAdditionalProgram(prev => ({...prev, participated: false}))}
                         className={additionalProgram.participated === false ? 'selected' : ''}
                       >
                         아니오
                       </button>
-                    </div>
+                        </div>
 
-                    {additionalProgram.participated === true && (
+                        {additionalProgram.participated === true && (
                       <div className="question">
                         <h3>프로그램에 대한 만족도를 선택해주세요.</h3>
-                        <div className="score-labels">
-                          <span>매우 불만족</span>
-                          <span>보통</span>
-                          <span>매우 만족</span>
-                        </div>
-                        <div className="score-buttons">
-                          {[1, 2, 3, 4, 5].map(score => (
-                            <button
-                              key={score}
-                              className={`score-button ${additionalProgram.satisfaction === score ? 'selected' : ''}`}
+                            <div className="score-labels">
+                              <span>매우 불만족</span>
+                              <span>보통</span>
+                              <span>매우 만족</span>
+                            </div>
+                            <div className="score-buttons">
+                              {[1, 2, 3, 4, 5].map(score => (
+                                <button
+                                  key={score}
+                                  className={`score-button ${additionalProgram.satisfaction === score ? 'selected' : ''}`}
                               onClick={() => setAdditionalProgram(prev => ({...prev, satisfaction: score}))}
                             >
                               {score}
                             </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                              ))}
+                            </div>
+                          </div>
+                        )}
 
-                    {additionalProgram.participated === false && (
+                        {additionalProgram.participated === false && (
                       <div className="question">
                         <h3>왜 참여하지 않으셨나요?</h3>
                         <button onClick={() => setAdditionalProgram(prev => ({...prev, nonParticipationReason: "시간이 없어서"}))}>
@@ -1466,46 +1514,46 @@ function App() {
                         <button onClick={() => setAdditionalProgram(prev => ({...prev, nonParticipationReason: "기타"}))}>
                           기타
                         </button>
-                        {additionalProgram.nonParticipationReason === "기타" && (
-                          <input
-                            type="text"
-                            className="other-reason-input"
-                            placeholder="기타 사유를 입력해주세요"
+                            {additionalProgram.nonParticipationReason === "기타" && (
+                              <input
+                                type="text"
+                                className="other-reason-input"
+                                placeholder="기타 사유를 입력해주세요"
                             value={additionalProgram.otherReason}
                             onChange={(e) => setAdditionalProgram(prev => ({...prev, otherReason: e.target.value}))}
-                          />
+                              />
+                            )}
+                          </div>
                         )}
-                      </div>
-                    )}
-                  </>
+                      </>
                 )}
 
                 <button 
                   className="start-survey-button"
                   onClick={() => {
-                    if (additionalProgram.exists === null) {
+                      if (additionalProgram.exists === null) {
                       alert('질문에 답해주세요.');
-                      return;
-                    }
-                    if (additionalProgram.exists === true) {
-                      if (!additionalProgram.name) {
-                        alert('프로그램 이름을 입력해주세요.');
                         return;
                       }
-                      if (additionalProgram.participated === null) {
+                      if (additionalProgram.exists === true) {
+                        if (!additionalProgram.name) {
+                          alert('프로그램 이름을 입력해주세요.');
+                          return;
+                        }
+                        if (additionalProgram.participated === null) {
                         alert('참여 여부를 선택해주세요.');
-                        return;
-                      }
-                      if (additionalProgram.participated === true && !additionalProgram.satisfaction) {
+                          return;
+                        }
+                        if (additionalProgram.participated === true && !additionalProgram.satisfaction) {
                         alert('만족도를 선택해주세요.');
-                        return;
+                          return;
+                        }
+                        if (additionalProgram.participated === false && !additionalProgram.nonParticipationReason) {
+                          alert('참여하지 않은 이유를 선택해주세요.');
+                          return;
+                        }
                       }
-                      if (additionalProgram.participated === false && !additionalProgram.nonParticipationReason) {
-                        alert('참여하지 않은 이유를 선택해주세요.');
-                        return;
-                      }
-                    }
-                    setCurrentPage('additionalQuestions');
+                      setCurrentPage('additionalQuestions');
                   }}
                 >
                   다음
@@ -1583,7 +1631,7 @@ function App() {
                         2025년 2월 28일 (금)
                       </label>
                     </div>
-                  </div>
+              </div>
 
                   <div className="alternative-date-section">
                     <h4>대체 일정 제안</h4>
@@ -1645,6 +1693,95 @@ function App() {
                 <h2>설문에 참여해 주셔서 감사합니다.</h2>
                 <p>소중한 의견을 연구에 반영하도록 하겠습니다.</p>
               </div>
+
+              <div className="interview-section">
+                <h3>추가 인터뷰 참여</h3>
+                <p>
+                  추가적으로 온라인 초점집단면담(FGI)에 참여해 주시면 더욱 감사하겠습니다.
+                  <br />
+                  면담 참여시 소정의 사례를 제공해 드립니다.
+                </p>
+
+                <div className="interview-buttons">
+                  <button
+                    className={`demo-button ${wantInterview === true ? 'selected' : ''}`}
+                    onClick={() => setWantInterview(true)}
+                  >참여하겠습니다</button>
+                  <button
+                    className={`demo-button ${wantInterview === false ? 'selected' : ''}`}
+                    onClick={() => setWantInterview(false)}
+                  >참여하지 않겠습니다</button>
+                </div>
+
+                {wantInterview && (
+                  <div className="date-selection-container">
+                    <div className="date-selection">
+                      <h4>참석 가능 날짜 선택 (복수 선택 가능)</h4>
+                      <div className="date-options">
+                        {[
+                          ['2025-02-24', '2월 24일 (월)'],
+                          ['2025-02-25', '2월 25일 (화)'],
+                          ['2025-02-26', '2월 26일 (수)'],
+                          ['2025-02-27', '2월 27일 (목)'],
+                          ['2025-02-28', '2월 28일 (금)']
+                        ].map(([date, label]) => (
+                          <label key={date}>
+                            <input
+                              type="checkbox"
+                              checked={selectedDates.includes(date)}
+                              onChange={() => handleDateSelection(date)}
+                            />
+                            {label} 오후 6:00~7:30
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="contact-info-section">
+                      <h4>연락처 정보 (모두 입력해주세요)</h4>
+                      <div className="contact-input">
+                        <input
+                          type="email"
+                          value={contactEmail}
+                          onChange={(e) => setContactEmail(e.target.value)}
+                          placeholder="이메일 주소"
+                        />
+                      </div>
+                      <div className="contact-input">
+                        <input
+                          type="tel"
+                          value={contactPhone}
+                          onChange={(e) => setContactPhone(e.target.value)}
+                          placeholder="전화번호"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <button 
+                className="finish-survey-button"
+                onClick={() => {
+                  if (wantInterview) {
+                    if (selectedDates.length === 0) {
+                      alert('참석 가능한 날짜를 선택해주세요.');
+                      return;
+                    }
+                    if (!contactEmail) {
+                      alert('이메일 주소를 입력해주세요.');
+                      return;
+                    }
+                    if (!contactPhone) {
+                      alert('전화번호를 입력해주세요.');
+                      return;
+                    }
+                  }
+                  alert('설문이 종료되었습니다.');
+                }}
+              >
+                설문 종료
+              </button>
             </div>
           </div>
         );
