@@ -1124,7 +1124,9 @@ function App() {
                       <h3 style={{ textAlign: 'center' }}>{programs[currentProgram]}에 대한 <br />만족도를 선택해주세요.</h3>
                       <div className="score-labels">
                         <span>매우 불만족</span>
+                        <span>불만족</span>
                         <span>보통</span>
+                        <span>만족</span>
                         <span>매우 만족</span>
                       </div>
                       <div className="score-buttons">
@@ -1482,7 +1484,9 @@ function App() {
                         <h3>프로그램에 대한 만족도를 선택해주세요.</h3>
                             <div className="score-labels">
                               <span>매우 불만족</span>
+                              <span>불만족</span>
                               <span>보통</span>
+                              <span>만족</span>
                               <span>매우 만족</span>
                             </div>
                             <div className="score-buttons">
@@ -1500,31 +1504,41 @@ function App() {
                         )}
 
                         {additionalProgram.participated === false && (
-                      <div className="question">
-                        <h3>왜 참여하지 않으셨나요?</h3>
-                        <button onClick={() => setAdditionalProgram(prev => ({...prev, nonParticipationReason: "시간이 없어서"}))}>
-                          시간이 없어서
-                        </button>
-                        <button onClick={() => setAdditionalProgram(prev => ({...prev, nonParticipationReason: "관심이 없어서"}))}>
-                          관심이 없어서
-                        </button>
-                        <button onClick={() => setAdditionalProgram(prev => ({...prev, nonParticipationReason: "도움이 안될 것 같아서"}))}>
-                          도움이 안될 것 같아서
-                        </button>
-                        <button onClick={() => setAdditionalProgram(prev => ({...prev, nonParticipationReason: "기타"}))}>
-                          기타
-                        </button>
-                            {additionalProgram.nonParticipationReason === "기타" && (
-                              <input
-                                type="text"
-                                className="other-reason-input"
-                                placeholder="기타 사유를 입력해주세요"
-                            value={additionalProgram.otherReason}
-                            onChange={(e) => setAdditionalProgram(prev => ({...prev, otherReason: e.target.value}))}
-                              />
-                            )}
-                          </div>
+                      <div className="reason-section">
+                        <h4>왜 참여하지 않으셨나요?</h4>
+                        <div className="program-buttons">
+                          {[
+                            "시간이 없어서",
+                            "관심이 없어서",
+                            "도움이 안될 것 같아서",
+                            "기타"
+                          ].map(reason => (
+                            <button
+                              key={reason}
+                              className={`demo-button ${additionalProgram.nonParticipationReason === reason ? 'selected' : ''}`}
+                              onClick={() => setAdditionalProgram(prev => ({
+                                ...prev,
+                                nonParticipationReason: reason
+                              }))}
+                            >
+                              {reason}
+                            </button>
+                          ))}
+                        </div>
+                        {additionalProgram.nonParticipationReason === "기타" && (
+                          <input
+                            type="text"
+                            className="other-reason-input"
+                            placeholder="기타 사유를 입력해주세요"
+                            value={additionalProgram.otherReason || ''}
+                            onChange={(e) => setAdditionalProgram(prev => ({
+                              ...prev,
+                              otherReason: e.target.value
+                            }))}
+                          />
                         )}
+                      </div>
+                    )}
                       </>
                 )}
 
