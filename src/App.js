@@ -66,7 +66,13 @@ function App() {
     participated: null,
     satisfaction: null,
     nonParticipationReason: '',
-    otherReason: ''
+    otherReason: '',
+    hasMore: null,          // 추가
+    secondName: '',         // 추가
+    secondParticipated: null, // 추가
+    secondSatisfaction: null, // 추가
+    secondNonParticipationReason: '', // 추가
+    secondOtherReason: ''   // 추가
   });
 
   const [selectedDates, setSelectedDates] = useState([]);
@@ -885,7 +891,7 @@ function App() {
                 </div>
 
                 <div className="question">
-                  <h3>3. 학년(2024-2학기 기준)</h3>
+                  <h3>3. 학년 (2024-2학기 기준)</h3>
                   {['1학년', '2학년', '3학년', '4학년'].map(grade => (
                     <button
                       key={grade}
@@ -1311,7 +1317,18 @@ function App() {
 
                 <button 
                   className="start-survey-button"
-                  onClick={handleSurveyComplete}
+                  onClick={() => {
+                    // 모든 문항이 답변되었는지 확인
+                    const totalQuestions = [...finalQuestions.q3, ...finalQuestions.q4].length;
+                    const answeredQuestions = Object.keys(finalResponses).length;
+                    
+                    if (answeredQuestions < totalQuestions) {
+                      alert('모든 문항에 답변해 주세요.');
+                      return;
+                    }
+                    
+                    handleSurveyComplete();
+                  }}
                 >
                   제출하기
                 </button>
@@ -1428,84 +1445,76 @@ function App() {
                 >
                   이전
                 </button>
-                <h2>추가 프로그램</h2>
+                <h2>추가 프로그램 확인</h2>
               </div>
 
-                  <div className="additional-program-section">
+              <div className="additional-program-section">
                 <div className="question">
-                  <h3>앞서 언급된 프로그램 외에 알고 있는 진로지도 프로그램이 있으십니까?</h3>
-                    <div className="program-buttons">
-                      <button
-                        className={`demo-button ${additionalProgram.exists === true ? 'selected' : ''}`}
+                  <h3>앞서 언급된 프로그램 이외에 알고 있는 진로지도 프로그램이 있으십니까?</h3>
+                  <div className="program-buttons">
+                    <button
+                      className={`demo-button ${additionalProgram.exists === true ? 'selected' : ''}`}
                       onClick={() => setAdditionalProgram(prev => ({...prev, exists: true}))}
-                    >
-                      예
-                    </button>
-                      <button
-                        className={`demo-button ${additionalProgram.exists === false ? 'selected' : ''}`}
+                    >예</button>
+                    <button
+                      className={`demo-button ${additionalProgram.exists === false ? 'selected' : ''}`}
                       onClick={() => setAdditionalProgram(prev => ({...prev, exists: false}))}
-                    >
-                      아니오
-                    </button>
+                    >아니오</button>
                   </div>
-                    </div>
+                </div>
 
-                {additionalProgram.exists === true && (
-                      <>
+                {additionalProgram.exists && (
+                  <>
                     <div className="question">
                       <h3>프로그램의 이름을 적어주세요:</h3>
-                          <input
-                            type="text"
-                            className="program-name-input"
-                            value={additionalProgram.name}
+                      <input
+                        type="text"
+                        className="program-name-input"
+                        value={additionalProgram.name}
                         onChange={(e) => setAdditionalProgram(prev => ({...prev, name: e.target.value}))}
-                            placeholder="프로그램 이름을 입력해주세요"
-                          />
-                        </div>
+                        placeholder="프로그램 이름을 입력해주세요"
+                      />
+                    </div>
 
                     <div className="question">
                       <h3>해당 프로그램에 참여해보신적이 있으십니까?</h3>
-                            <button
-                        onClick={() => setAdditionalProgram(prev => ({...prev, participated: true}))}
-                        className={additionalProgram.participated === true ? 'selected' : ''}
-                      >
-                        네
-                      </button>
-                            <button
-                        onClick={() => setAdditionalProgram(prev => ({...prev, participated: false}))}
-                        className={additionalProgram.participated === false ? 'selected' : ''}
-                      >
-                        아니오
-                      </button>
-                        </div>
+                      <div className="program-buttons">
+                        <button
+                          className={`demo-button ${additionalProgram.participated === true ? 'selected' : ''}`}
+                          onClick={() => setAdditionalProgram(prev => ({...prev, participated: true}))}
+                        >네</button>
+                        <button
+                          className={`demo-button ${additionalProgram.participated === false ? 'selected' : ''}`}
+                          onClick={() => setAdditionalProgram(prev => ({...prev, participated: false}))}
+                        >아니오</button>
+                      </div>
+                    </div>
 
-                        {additionalProgram.participated === true && (
+                    {additionalProgram.participated === true && (
                       <div className="question">
                         <h3>프로그램에 대한 만족도를 선택해주세요.</h3>
-                            <div className="score-labels">
-                              <span>매우 불만족</span>
-                              <span>불만족</span>
-                              <span>보통</span>
-                              <span>만족</span>
-                              <span>매우 만족</span>
-                            </div>
-                            <div className="score-buttons">
-                              {[1, 2, 3, 4, 5].map(score => (
-                                <button
-                                  key={score}
-                                  className={`score-button ${additionalProgram.satisfaction === score ? 'selected' : ''}`}
+                        <div className="score-labels">
+                          <span>매우 불만족</span>
+                          <span>불만족</span>
+                          <span>보통</span>
+                          <span>만족</span>
+                          <span>매우 만족</span>
+                        </div>
+                        <div className="score-buttons">
+                          {[1, 2, 3, 4, 5].map(score => (
+                            <button
+                              key={score}
+                              className={`score-button ${additionalProgram.satisfaction === score ? 'selected' : ''}`}
                               onClick={() => setAdditionalProgram(prev => ({...prev, satisfaction: score}))}
-                            >
-                              {score}
-                            </button>
-                              ))}
-                            </div>
-                          </div>
-                        )}
+                            >{score}</button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
-                        {additionalProgram.participated === false && (
-                      <div className="reason-section">
-                        <h4>왜 참여하지 않으셨나요?</h4>
+                    {additionalProgram.participated === false && (
+                      <div className="question">
+                        <h3>왜 참여하지 않으셨나요?</h3>
                         <div className="program-buttons">
                           {[
                             "시간이 없어서",
@@ -1539,42 +1548,163 @@ function App() {
                         )}
                       </div>
                     )}
+
+                    {isFirstProgramComplete() && (
+                      <>
+                        <div className="question">
+                          <h3>방금 적으신 프로그램 이외에 또 알고 있는 프로그램이 있으십니까?</h3>
+                          <div className="program-buttons">
+                            <button
+                              className={`demo-button ${additionalProgram.hasMore === true ? 'selected' : ''}`}
+                              onClick={() => setAdditionalProgram(prev => ({...prev, hasMore: true}))}
+                            >예</button>
+                            <button
+                              className={`demo-button ${additionalProgram.hasMore === false ? 'selected' : ''}`}
+                              onClick={() => setAdditionalProgram(prev => ({...prev, hasMore: false}))}
+                            >아니오</button>
+                          </div>
+                        </div>
+
+                        {additionalProgram.hasMore && (
+                          <>
+                            <div className="question">
+                              <h3>두 번째 프로그램의 이름을 적어주세요:</h3>
+                              <input
+                                type="text"
+                                className="program-name-input"
+                                value={additionalProgram.secondName}
+                                onChange={(e) => setAdditionalProgram(prev => ({...prev, secondName: e.target.value}))}
+                                placeholder="프로그램 이름을 입력해주세요"
+                              />
+                            </div>
+
+                            <div className="question">
+                              <h3>해당 프로그램에 참여해보신적이 있으십니까?</h3>
+                              <div className="program-buttons">
+                                <button
+                                  className={`demo-button ${additionalProgram.secondParticipated === true ? 'selected' : ''}`}
+                                  onClick={() => setAdditionalProgram(prev => ({...prev, secondParticipated: true}))}
+                                >네</button>
+                                <button
+                                  className={`demo-button ${additionalProgram.secondParticipated === false ? 'selected' : ''}`}
+                                  onClick={() => setAdditionalProgram(prev => ({...prev, secondParticipated: false}))}
+                                >아니오</button>
+                              </div>
+                            </div>
+
+                            {additionalProgram.secondParticipated === true && (
+                              <div className="question">
+                                <h3>프로그램에 대한 만족도를 선택해주세요.</h3>
+                                <div className="score-labels">
+                                  <span>매우 불만족</span>
+                                  <span>불만족</span>
+                                  <span>보통</span>
+                                  <span>만족</span>
+                                  <span>매우 만족</span>
+                                </div>
+                                <div className="score-buttons">
+                                  {[1, 2, 3, 4, 5].map(score => (
+                                    <button
+                                      key={score}
+                                      className={`score-button ${additionalProgram.secondSatisfaction === score ? 'selected' : ''}`}
+                                      onClick={() => setAdditionalProgram(prev => ({...prev, secondSatisfaction: score}))}
+                                    >{score}</button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {additionalProgram.secondParticipated === false && (
+                              <div className="question">
+                                <h3>왜 참여하지 않으셨나요?</h3>
+                                <div className="program-buttons">
+                                  {[
+                                    "시간이 없어서",
+                                    "관심이 없어서",
+                                    "도움이 안될 것 같아서",
+                                    "기타"
+                                  ].map(reason => (
+                                    <button
+                                      key={reason}
+                                      className={`demo-button ${additionalProgram.secondNonParticipationReason === reason ? 'selected' : ''}`}
+                                      onClick={() => setAdditionalProgram(prev => ({
+                                        ...prev,
+                                        secondNonParticipationReason: reason
+                                      }))}
+                                    >
+                                      {reason}
+                                    </button>
+                                  ))}
+                                </div>
+                                {additionalProgram.secondNonParticipationReason === "기타" && (
+                                  <input
+                                    type="text"
+                                    className="other-reason-input"
+                                    placeholder="기타 사유를 입력해주세요"
+                                    value={additionalProgram.secondOtherReason || ''}
+                                    onChange={(e) => setAdditionalProgram(prev => ({
+                                      ...prev,
+                                      secondOtherReason: e.target.value
+                                    }))}
+                                  />
+                                )}
+                              </div>
+                            )}
+                          </>
+                        )}
                       </>
+                    )}
+                  </>
                 )}
+              </div>
 
                 <button 
                   className="start-survey-button"
                   onClick={() => {
-                      if (additionalProgram.exists === null) {
+                    if (additionalProgram.exists === null) {
                       alert('질문에 답해주세요.');
+                      return;
+                    }
+                    if (additionalProgram.exists === true) {
+                      if (!additionalProgram.name) {
+                        alert('프로그램 이름을 입력해주세요.');
                         return;
                       }
-                      if (additionalProgram.exists === true) {
-                        if (!additionalProgram.name) {
-                          alert('프로그램 이름을 입력해주세요.');
-                          return;
-                        }
-                        if (additionalProgram.participated === null) {
+                      if (additionalProgram.participated === null) {
                         alert('참여 여부를 선택해주세요.');
+                        return;
+                      }
+                      if (!isFirstProgramComplete()) {
+                        alert('첫 번째 프로그램에 대한 모든 질문에 답해주세요.');
+                        return;
+                      }
+                      if (additionalProgram.hasMore === null) {
+                        alert('추가 프로그램 여부를 선택해주세요.');
+                        return;
+                      }
+                      if (additionalProgram.hasMore === true) {
+                        if (!additionalProgram.secondName) {
+                          alert('두 번째 프로그램 이름을 입력해주세요.');
                           return;
                         }
-                        if (additionalProgram.participated === true && !additionalProgram.satisfaction) {
-                        alert('만족도를 선택해주세요.');
+                        if (additionalProgram.secondParticipated === null) {
+                          alert('두 번째 프로그램 참여 여부를 선택해주세요.');
                           return;
                         }
-                        if (additionalProgram.participated === false && !additionalProgram.nonParticipationReason) {
-                          alert('참여하지 않은 이유를 선택해주세요.');
+                        if (!isSecondProgramComplete()) {
+                          alert('두 번째 프로그램에 대한 모든 질문에 답해주세요.');
                           return;
                         }
                       }
-                      setCurrentPage('additionalQuestions');
+                    }
+                    setCurrentPage('additionalQuestions');
                   }}
                 >
                   다음
                 </button>
               </div>
             </div>
-          </div>
+          
         );
       case 'additionalSurvey':
         return (
@@ -1812,6 +1942,34 @@ function App() {
     } else {
       handleSubmitSurvey(); // 면담 참여하지 않을 경우 바로 데이터 전송
     }
+  };
+
+  // 첫 번째 프로그램 응답이 완료되었는지 확인하는 함수
+  const isFirstProgramComplete = () => {
+    if (additionalProgram.participated === true) {
+      return additionalProgram.satisfaction !== null;
+    }
+    if (additionalProgram.participated === false) {
+      if (additionalProgram.nonParticipationReason === "기타") {
+        return !!additionalProgram.otherReason;
+      }
+      return !!additionalProgram.nonParticipationReason;
+    }
+    return false;
+  };
+
+  // 두 번째 프로그램 응답이 완료되었는지 확인하는 함수
+  const isSecondProgramComplete = () => {
+    if (additionalProgram.secondParticipated === true) {
+      return additionalProgram.secondSatisfaction !== null;
+    }
+    if (additionalProgram.secondParticipated === false) {
+      if (additionalProgram.secondNonParticipationReason === "기타") {
+        return !!additionalProgram.secondOtherReason;
+      }
+      return !!additionalProgram.secondNonParticipationReason;
+    }
+    return false;
   };
 
   return (
