@@ -358,7 +358,8 @@ function App() {
     });
   };
 
-  const handleSubmitSurvey = async () => {
+  // 면담 참여를 원하지 않는 경우의 제출
+  const handleSurveyComplete = async () => {
     const surveyData = {
       personalInfo,
       competencyScores,
@@ -367,9 +368,10 @@ function App() {
       expectationResponses,
       finalResponses,
       additionalProgram,
-      selectedDates,
-      alternativeDate,
-      contactEmail,
+      wantInterview: false,  // 면담 참여 거부
+      selectedDates: [],     // 빈 배열
+      contactEmail: '',      // 빈 문자열
+      contactPhone: '',      // 빈 문자열
       submittedAt: new Date().toISOString()
     };
 
@@ -393,23 +395,54 @@ function App() {
     }
   };
 
-  // 1. 면담 참여 여부와 관계없이 데이터를 전송하는 새로운 함수
-  const handleSurveyComplete = async () => {
-    await handleSubmitSurvey();  // 데이터 전송
-  };
-
-  // 면담 참여자의 최종 제출
+  // 면담 참여를 원하는 경우의 제출
   const handleInterviewSubmit = async () => {
-    if (selectedDates.length === 0 && !alternativeDate) {
-      alert('참석 가능한 날짜를 선택하거나 대체 일정을 제안해주세요.');
+    if (selectedDates.length === 0) {
+      alert('참석 가능한 날짜를 선택해주세요.');
       return;
     }
     if (!contactEmail) {
-      alert('연락 가능한 이메일 주소를 입력해주세요.');
+      alert('이메일 주소를 입력해주세요.');
       return;
     }
-    
-    await handleSubmitSurvey();
+    if (!contactPhone) {
+      alert('전화번호를 입력해주세요.');
+      return;
+    }
+
+    const surveyData = {
+      personalInfo,
+      competencyScores,
+      responses,
+      additionalResponses,
+      expectationResponses,
+      finalResponses,
+      additionalProgram,
+      wantInterview: true,   // 면담 참여 동의
+      selectedDates,         // 선택된 날짜들
+      contactEmail,          // 입력된 이메일
+      contactPhone,          // 입력된 전화번호
+      submittedAt: new Date().toISOString()
+    };
+
+    try {
+      const response = await fetch(process.env.REACT_APP_CLOUD_FUNCTION_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(surveyData)
+      });
+
+      if (!response.ok) {
+        throw new Error('설문 제출 실패');
+      }
+
+      setCurrentPage('surveyComplete');
+    } catch (error) {
+      console.error('Error:', error);
+      alert('설문 제출 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }
   };
 
   const renderPage = () => {
@@ -1940,7 +1973,7 @@ function App() {
     if (wantToParticipate) {
       setCurrentPage('additionalSurvey');
     } else {
-      handleSubmitSurvey(); // 면담 참여하지 않을 경우 바로 데이터 전송
+      handleSurveyComplete(); // 면담 참여하지 않을 경우 바로 데이터 전송
     }
   };
 
