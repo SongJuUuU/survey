@@ -39,10 +39,7 @@ function App() {
   const [expectationResponses, setExpectationResponses] = useState({});
   const [showFinalQuestions, setShowFinalQuestions] = useState(true);
   const [finalResponses, setFinalResponses] = useState({});
-  const [showFinalPage, setShowFinalPage] = useState(false);
-  const [contactInfo, setContactInfo] = useState('');
   const [wantInterview, setWantInterview] = useState(null);
-  const [interviewEmail, setInterviewEmail] = useState('');
 
   const [currentPage, setCurrentPage] = useState('welcome');
 
@@ -198,9 +195,7 @@ function App() {
     }
   };
 
-  const handlePreviousProgram = () => {
-    setCurrentProgram(prev => prev - 1);
-  };
+
 
   const showNextButton = () => {
     const response = responses[programs[currentProgram]];
@@ -213,9 +208,7 @@ function App() {
     return false;
   };
 
-  const showPreviousButton = () => {
-    return currentProgram > 0;
-  };
+  
 
   const handlePersonalInfoChange = (field, value) => {
     if (field === 'age') {
@@ -231,7 +224,7 @@ function App() {
       [field]: value
     }));
   };
-// 코드에디팅 바이 네오빔
+
   const handleCompetencyChange = (type, score) => {
     setCompetencyScores(prev => ({
       ...prev,
@@ -251,10 +244,7 @@ function App() {
     setCurrentPage('futureCompetency');
   };
 
-  const startFutureCompetency = () => {
-    setShowDemographics(false);
-    setShowFutureCompetency(true);
-  };
+
 
   const startMainSurvey = () => {
     if (Object.values(competencyScores).some(score => score === 0)) {
@@ -286,7 +276,7 @@ function App() {
     }
     setCurrentPage('expectationScale');
   };
-//히히 지금 nvim으로 작성하고 있지롱
+
   const handleFinalResponse = (questionNumber, score) => {
     setFinalResponses(prev => ({
       ...prev,
@@ -324,9 +314,6 @@ function App() {
     setCurrentPage('expectationScale');
   };
 
-  const handleFinalPagePrevious = () => {
-    setCurrentPage('finalQuestions');
-  };
 
   const handleConsentChange = (consentId, value) => {
     setConsents(prev => ({
@@ -356,22 +343,67 @@ function App() {
     });
   };
 
-  // 면담 참여를 원하지 않는 경우의 제출
+
   const handleSurveyComplete = async () => {
     const surveyData = {
-      personalInfo,
-      competencyScores,
-      responses,
-      additionalResponses,
-      expectationResponses,
-      finalResponses,
-      additionalProgram,
-      wantInterview: false,  // 면담 참여 거부
-      selectedDates: [],     // 빈 배열
-      contactEmail: '',      // 빈 문자열
-      contactPhone: '',      // 빈 문자열
-      submittedAt: new Date().toISOString()
+      // 제출 시간
+      submittedAt: new Date().toISOString(),
+
+      // 1. 일반적 사항
+      personalInfo: {
+        gender: personalInfo.gender,
+        age: personalInfo.age,
+        grade: personalInfo.grade,
+        admissionType: personalInfo.admissionType,
+        gpa: personalInfo.gpa,
+        majorReason: personalInfo.majorReason,
+        economicStatus: personalInfo.economicStatus
+      },
+
+      // 2. 역량 자가진단
+      competencyScores: {
+        therapeutic: competencyScores.therapeutic,
+        creative: competencyScores.creative,
+        global: competencyScores.global
+      },
+
+      // 3. 프로그램 설문 응답
+      programResponses: responses,
+
+      // 4. 추가 프로그램 설문
+      additionalProgram: {
+        exists: additionalProgram.exists,
+        name: additionalProgram.name || null,
+        participated: additionalProgram.participated,
+        satisfaction: additionalProgram.satisfaction || null,
+        nonParticipationReason: additionalProgram.nonParticipationReason || null,
+        hasMore: additionalProgram.hasMore || false,
+        secondName: additionalProgram.secondName || null,
+        secondParticipated: additionalProgram.secondParticipated || null,
+        secondSatisfaction: additionalProgram.secondSatisfaction || null,
+        secondNonParticipationReason: additionalProgram.secondNonParticipationReason || null,
+        secondOtherReason: additionalProgram.secondOtherReason || null
+      },
+
+      // 5. 진로 자기효능감
+      careerSelfEfficacy: additionalResponses,
+
+      // 6. 프로그램 기대
+      expectationResponses: expectationResponses,
+
+      // 7. 진로준비행동
+      careerPreparationBehavior: finalResponses,
+
+      // 8. 면담 정보
+      interview: {
+        wantInterview: wantInterview || false,
+        selectedDates: selectedDates || [],
+        contactEmail: contactEmail || null,
+        contactPhone: contactPhone || null
+      }
     };
+
+    console.log('Sending data:', surveyData);
 
     try {
       const response = await fetch(process.env.REACT_APP_CLOUD_FUNCTION_URL, {
@@ -383,12 +415,15 @@ function App() {
       });
 
       if (!response.ok) {
-        throw new Error('설문 제출 실패');
+        const errorData = await response.json();
+        console.error('Server error:', errorData);
+        throw new Error(`설문 제출 실패: ${errorData.error || '알 수 없는 오류'}`);
       }
 
-      setCurrentPage('surveyComplete');
+      alert('설문이 성공적으로 제출되었습니다. 참여해 주셔서 감사합니다.');
+      window.close();
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error details:', error);
       alert('설문 제출 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
     }
   };
@@ -1358,10 +1393,10 @@ function App() {
                       return;
                     }
                     
-                    handleSurveyComplete();
+                    setCurrentPage('finalPage');
                   }}
                 >
-                  제출하기
+                  다음
                 </button>
               </div>
             </div>
@@ -1374,38 +1409,103 @@ function App() {
               <div className="navigation-buttons">
                 <button 
                   className="nav-button previous-button"
-                  onClick={() => setCurrentPage('careerBehavior')}
+                  onClick={() => setCurrentPage('finalQuestions')}
                 >
                   이전
                 </button>
-                <h2>추가 인터뷰 참여</h2>
+                <h2>설문에 응해 주셔서 감사합니다</h2>
               </div>
 
               <div className="interview-section">
-                <h3 style={{ textAlign: 'center' }}>[연세대학교 간호대학 진로지도 경험 연구를 위한 집단 인터뷰 참여자 모집]</h3>
+                <div className="contact-info-section">
+                  <h3>연락처 정보 (모두 입력해주세요)</h3>
+                  <p>
+                    아래 연락처를 기입해주시는 분들께, 소정의 기프티콘이 지급될 예정입니다. 
+                    연락처는 기프티콘 제공 이외의 목적으로 사용되지 않으며, 연구가 종료되면 안전하게 폐기됩니다.
+                  </p>
+                  <div className="contact-input">
+                    <input
+                      type="email"
+                      value={contactEmail}
+                      onChange={(e) => setContactEmail(e.target.value)}
+                      placeholder="이메일 주소"
+                    />
+                  </div>
+                  <div className="contact-input">
+                    <input
+                      type="tel"
+                      value={contactPhone}
+                      onChange={(e) => setContactPhone(e.target.value)}
+                      placeholder="전화번호"
+                    />
+                  </div>
+                </div>
+
+                <h3>추가 인터뷰 참여</h3>
                 <p>
-                  향후 연세대학교 간호대학생들의 진로 지도와 관련된 심층적인 경험을 탐구하기 위해 
-                  집단 인터뷰를 시행할 예정입니다. 집단 인터뷰에 참여하셔서 귀하의 소중한 경험과 
-                  의견을 나누어 주시면 연구에 큰 도움이 될 것입니다.
-                </p>
-                <p>
-                  집단 인터뷰에 참여를 원하십니까? 
+                  추가적으로 진로지도 프로그램 경험에 대한 심층 온라인 그룹 인터뷰를 시행할 예정입니다.
                   <br />
-                  (추가 사례금을 지급해드리며, 인터뷰에 대한 
-                  
-                  설명을 들으신 후에 참여 의향을 철회하셔도 됩니다.)
+                  면담 참여시 소정의 사례를 제공해 드립니다. 여러분의 소중한 경험과 의견이 연구에 큰 도움이 됩니다.
                 </p>
+
                 <div className="interview-buttons">
                   <button
                     className={`demo-button ${wantInterview === true ? 'selected' : ''}`}
-                    onClick={() => handleInterviewChoice(true)}
-                  >네</button>
+                    onClick={() => setWantInterview(true)}
+                  >참여하겠습니다</button>
                   <button
                     className={`demo-button ${wantInterview === false ? 'selected' : ''}`}
-                    onClick={() => handleInterviewChoice(false)}
-                  >아니요</button>
+                    onClick={() => setWantInterview(false)}
+                  >참여하지 않겠습니다</button>
                 </div>
+
+                {wantInterview && (
+                  <div className="date-selection-container">
+                    <div className="date-selection">
+                      <h4>참석 가능 날짜 선택 (복수 선택 가능)</h4>
+                      <div className="date-options">
+                        {[
+                          ['2025-02-24', '2월 24일 (월)'],
+                          ['2025-02-25', '2월 25일 (화)'],
+                          ['2025-02-26', '2월 26일 (수)'],
+                          ['2025-02-27', '2월 27일 (목)'],
+                          ['2025-02-28', '2월 28일 (금)']
+                        ].map(([date, label]) => (
+                          <label key={date}>
+                            <input
+                              type="checkbox"
+                              checked={selectedDates.includes(date)}
+                              onChange={() => handleDateSelection(date)}
+                            />
+                            {label} 오후 6:00~7:30
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
+
+              <button 
+                className="start-survey-button"
+                onClick={() => {
+                  if (!contactEmail || !contactPhone) {
+                    alert('연락처 정보를 모두 입력해주세요.');
+                    return;
+                  }
+                  if (wantInterview === null) {
+                    alert('인터뷰 참여 여부를 선택해주세요.');
+                    return;
+                  }
+                  if (wantInterview && selectedDates.length === 0) {
+                    alert('참석 가능한 날짜를 선택해주세요.');
+                    return;
+                  }
+                  handleSurveyComplete();
+                }}
+              >
+                제출하기
+              </button>
             </div>
           </div>
         );
@@ -1737,129 +1837,7 @@ function App() {
             </div>
           
         );
-      case 'additionalSurvey':
-        return (
-          <div className="App">
-            <div className="survey-container">
-              <div className="navigation-buttons">
-                <button 
-                  className="nav-button previous-button"
-                  onClick={() => setCurrentPage('finalPage')}
-                >
-                  이전
-                </button>
-                <h2>온라인 초점집단면담 일정 확인</h2>
-              </div>
-
-              <div className="program-intro">
-                <p>
-                  안녕하세요.
-                  <br />
-                  연구에 참여해 주셔서 감사합니다.
-                  <br />
-                  <br />
-                  아래 일정 중 오후 6:00~7:30에 진행될 온라인 초점집단 면담에 참석 가능하신 날짜를 선택해 주세요.                 
-                </p>
-                
-                <div className="date-selection-container">
-                  <div className="date-selection">
-                    <h4>참석 가능 날짜 선택 (복수 선택 가능)</h4>
-                    <div className="date-options" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={selectedDates.includes('2025-02-24')}
-                          onChange={() => handleDateSelection('2025-02-24')}
-                        />
-                        2025년 2월 24일 (월)
-                      </label>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={selectedDates.includes('2025-02-25')} 
-                          onChange={() => handleDateSelection('2025-02-25')}
-                        />
-                        2025년 2월 25일 (화)
-                      </label>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={selectedDates.includes('2025-02-26')}
-                          onChange={() => handleDateSelection('2025-02-26')}
-                        />
-                        2025년 2월 26일 (수)
-                      </label>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={selectedDates.includes('2025-02-27')}
-                          onChange={() => handleDateSelection('2025-02-27')}
-                        />
-                        2025년 2월 27일 (목)
-                      </label>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={selectedDates.includes('2025-02-28')}
-                          onChange={() => handleDateSelection('2025-02-28')}
-                        />
-                        2025년 2월 28일 (금)
-                      </label>
-                    </div>
-              </div>
-
-                  <div className="alternative-date-section">
-                    <h4>대체 일정 제안</h4>
-                    <p>위 날짜 중 참석이 어려운 경우, 가능한 일정이 있으면 작성해 주세요.</p>
-                    <textarea
-                      value={alternativeDate}
-                      onChange={(e) => setAlternativeDate(e.target.value)}
-                      placeholder="예: 3월 1일 오후 2시~3시 30분"
-                      rows="2"
-                    />
-                  </div>
-
-                  <div className="contact-email-section">
-                    <h4>연락 가능한 이메일 주소</h4>
-                    <input
-                      type="email"
-                      value={contactEmail}
-                      onChange={(e) => setContactEmail(e.target.value)}
-                      placeholder="이메일 주소를 입력해주세요"
-                    />
-                  </div>
-
-                  <div>
-                    <p style={{fontSize: '1.05em'}}>
-                      <br />
-                      <br />
-
-                      일정이 확정되면 다시 안내해 드리겠습니다.
-                      <br />
-                      다시 한 번 연구에 참여해 주셔서 감사합니다.
-                    </p>
-                    
-                    <p className="signature" style={{fontSize: '1.05em'}}>
-                    <br />
-
-
-                      감사합니다.
-                      <br />
-                      연구팀 드림
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <button 
-                className="start-survey-button"
-                onClick={handleInterviewSubmit}
-              >
-                제출하기
-              </button>
-            </div>
-          </div>
-        );
+      
       case 'surveyComplete':
         return (
           <div className="App">
@@ -1868,95 +1846,6 @@ function App() {
                 <h2>설문에 참여해 주셔서 감사합니다.</h2>
                 <p>소중한 의견을 연구에 반영하도록 하겠습니다.</p>
               </div>
-
-              <div className="interview-section">
-                <h3>추가 인터뷰 참여</h3>
-                <p>
-                  추가적으로 진로지도 프로그램에 대한 온라인 그룹 인터뷰에 참여해 주시면 더욱 감사하겠습니다.
-                  <br />
-                  면담 참여시 소정의 사례를 제공해 드립니다.
-                </p>
-
-                <div className="interview-buttons">
-                  <button
-                    className={`demo-button ${wantInterview === true ? 'selected' : ''}`}
-                    onClick={() => setWantInterview(true)}
-                  >참여하겠습니다</button>
-                  <button
-                    className={`demo-button ${wantInterview === false ? 'selected' : ''}`}
-                    onClick={() => setWantInterview(false)}
-                  >참여하지 않겠습니다</button>
-                </div>
-
-                {wantInterview && (
-                  <div className="date-selection-container">
-                    <div className="date-selection">
-                      <h4>참석 가능 날짜 선택 (복수 선택 가능)</h4>
-                      <div className="date-options">
-                        {[
-                          ['2025-02-24', '2월 24일 (월)'],
-                          ['2025-02-25', '2월 25일 (화)'],
-                          ['2025-02-26', '2월 26일 (수)'],
-                          ['2025-02-27', '2월 27일 (목)'],
-                          ['2025-02-28', '2월 28일 (금)']
-                        ].map(([date, label]) => (
-                          <label key={date}>
-                            <input
-                              type="checkbox"
-                              checked={selectedDates.includes(date)}
-                              onChange={() => handleDateSelection(date)}
-                            />
-                            {label} 오후 6:00~7:30
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="contact-info-section">
-                      <h4>연락처 정보 (모두 입력해주세요)</h4>
-                      <div className="contact-input">
-                        <input
-                          type="email"
-                          value={contactEmail}
-                          onChange={(e) => setContactEmail(e.target.value)}
-                          placeholder="이메일 주소"
-                        />
-                      </div>
-                      <div className="contact-input">
-                        <input
-                          type="tel"
-                          value={contactPhone}
-                          onChange={(e) => setContactPhone(e.target.value)}
-                          placeholder="전화번호"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <button 
-                className="finish-survey-button"
-                onClick={() => {
-                  if (wantInterview) {
-                    if (selectedDates.length === 0) {
-                      alert('참석 가능한 날짜를 선택해주세요.');
-                      return;
-                    }
-                    if (!contactEmail) {
-                      alert('이메일 주소를 입력해주세요.');
-                      return;
-                    }
-                    if (!contactPhone) {
-                      alert('전화번호를 입력해주세요.');
-                      return;
-                    }
-                  }
-                  alert('설문이 종료되었습니다.');
-                }}
-              >
-                설문 종료
-              </button>
             </div>
           </div>
         );
@@ -1965,15 +1854,7 @@ function App() {
     }
   };
 
-  // 면담 참여자의 최종 제출
-  const handleInterviewChoice = (wantToParticipate) => {
-    setWantInterview(wantToParticipate);
-    if (wantToParticipate) {
-      setCurrentPage('additionalSurvey');
-    } else {
-      handleSurveyComplete(); // 면담 참여하지 않을 경우 바로 데이터 전송
-    }
-  };
+  
 
   // 첫 번째 프로그램 응답이 완료되었는지 확인하는 함수
   const isFirstProgramComplete = () => {
