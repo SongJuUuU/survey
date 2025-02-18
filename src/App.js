@@ -1599,7 +1599,7 @@ function App() {
                         {additionalProgram.hasMore && (
                           <>
                             <div className="question">
-                              <h3>두 번째 프로그램의 이름을 적어주세요:</h3>
+                              <h3>해당 프로그램의 이름을 적어주세요:</h3>
                               <input
                                 type="text"
                                 className="program-name-input"
