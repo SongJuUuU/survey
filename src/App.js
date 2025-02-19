@@ -1871,7 +1871,7 @@ function App() {
 
               <div className="feedback-section">
                 <div className="feedback-intro">
-                  <p>진로지도 관련 프로그램에 대한 불만 사항 및 개선점 등에 대해 자유롭게 얘기해 주십시오.</p>
+                  <h3>진로지도 관련 프로그램에 대한 불만 사항 및 개선점 등에 대해 자유롭게 얘기해 주십시오.</h3>
                   <p className="optional-text">(선택사항)</p>
                 </div>
 
