@@ -406,7 +406,7 @@ function App() {
       },
 
       // 9. 피드백
-      feedback: feedback || null,  // 피드백이 없는 경우 null로 저장
+      
     };
 
     console.log('Sending data:', surveyData);
