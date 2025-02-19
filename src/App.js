@@ -79,6 +79,9 @@ function App() {
   const [contactEmail, setContactEmail] = useState('');
   const [contactPhone, setContactPhone] = useState('');
 
+  // feedback 상태 추가 (App 컴포넌트의 상태 선언부에 추가)
+  const [feedback, setFeedback] = useState('');
+
   const questions = {
     q1: [
       "1. 내가 관심을 가지고 있는 직업에 대한 정보를 도서관에서 찾을 수 있다.",
@@ -400,7 +403,10 @@ function App() {
         selectedDates: selectedDates || [],
         contactEmail: contactEmail || null,
         contactPhone: contactPhone || null
-      }
+      },
+
+      // 9. 피드백
+      feedback: feedback || null,  // 피드백이 없는 경우 null로 저장
     };
 
     console.log('Sending data:', surveyData);
@@ -1828,7 +1834,7 @@ function App() {
                         }
                       }
                     }
-                    setCurrentPage('additionalQuestions');
+                    setCurrentPage('feedback');
                   }}
                 >
                   다음
@@ -1846,6 +1852,46 @@ function App() {
                 <h2>설문에 참여해 주셔서 감사합니다.</h2>
                 <p>소중한 의견을 연구에 반영하도록 하겠습니다.</p>
               </div>
+            </div>
+          </div>
+        );
+      case 'feedback':
+        return (
+          <div className="App">
+            <div className="survey-container">
+              <div className="navigation-buttons">
+                <button 
+                  className="nav-button previous-button"
+                  onClick={() => setCurrentPage('additionalProgram')}
+                >
+                  이전
+                </button>
+                <h2>프로그램 개선 의견</h2>
+              </div>
+
+              <div className="feedback-section">
+                <div className="feedback-intro">
+                  <p>진로지도 관련 프로그램에 대한 불만 사항 및 개선점 등에 대해 자유롭게 얘기해 주십시오.</p>
+                  <p className="optional-text">(선택사항)</p>
+                </div>
+
+                <div className="feedback-input-container">
+                  <textarea
+                    className="feedback-input"
+                    value={feedback}
+                    onChange={(e) => setFeedback(e.target.value)}
+                    placeholder="의견을 자유롭게 작성해주세요..."
+                    rows={8}
+                  />
+                </div>
+              </div>
+
+              <button 
+                className="start-survey-button"
+                onClick={() => setCurrentPage('additionalQuestions')}
+              >
+                다음
+              </button>
             </div>
           </div>
         );

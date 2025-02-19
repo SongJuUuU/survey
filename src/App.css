@@ -1056,3 +1056,103 @@ h3 {
   font-size: 1.05em;
   color: #444;
 }
+
+.feedback-section {
+  width: 100%;
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.feedback-intro {
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.feedback-intro p {
+  font-size: 1.1em;
+  line-height: 1.6;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.feedback-intro .optional-text {
+  color: #7f8c8d;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 8px;
+}
+
+.feedback-input-container {
+  width: 100%;
+  margin: 20px 0;
+  position: relative;
+}
+
+.feedback-input {
+  width: 100%;
+  padding: 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 1.05em;
+  line-height: 1.6;
+  resize: vertical;
+  min-height: 200px;
+  transition: all 0.3s ease;
+  background-color: #f8f9fa;
+  color: #2c3e50;
+}
+
+.feedback-input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 10px rgba(52, 152, 219, 0.1);
+  background-color: #ffffff;
+}
+
+.feedback-input::placeholder {
+  color: #95a5a6;
+  font-style: italic;
+}
+
+/* 스크롤바 스타일링 */
+.feedback-input::-webkit-scrollbar {
+  width: 8px;
+}
+
+.feedback-input::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.feedback-input::-webkit-scrollbar-thumb {
+  background: #bdc3c7;
+  border-radius: 4px;
+}
+
+.feedback-input::-webkit-scrollbar-thumb:hover {
+  background: #95a5a6;
+}
+
+/* 호버 효과 */
+.feedback-input:hover {
+  border-color: #bdc3c7;
+  background-color: #ffffff;
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+  .feedback-section {
+    padding: 20px;
+    margin: 15px auto;
+  }
+
+  .feedback-input {
+    padding: 15px;
+    font-size: 1em;
+    min-height: 150px;
+  }
+}
